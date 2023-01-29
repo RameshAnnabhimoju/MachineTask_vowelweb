@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Card, Button, Stack, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import LoginFormValidationComponent from "./LoginFormValidationComponent";
+
 function LoginComponent() {
   const navigate = useNavigate();
   const InitialLoginValues = {
@@ -8,15 +10,20 @@ function LoginComponent() {
     password: "",
   };
   const [loginValues, setLoginValues] = useState(InitialLoginValues);
-  const [validated, setValidated] = useState(false);
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setValidated(true);
-  };
+  const [errors, setErrors] = useState({});
   const changeHandler = (event) => {
     const { name, value } = event.target;
     setLoginValues({ ...loginValues, [name]: value });
+  };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const newErrors = LoginFormValidationComponent(loginValues);
+    if (JSON.stringify(newErrors) === "{}") {
+      const userDetails = JSON.parse(localStorage.getItem("machineTask"));
+      sessionStorage.setItem("machineTask_login", JSON.stringify(userDetails));
+      navigate("/home");
+    }
+    setErrors(newErrors);
   };
   return (
     <div
@@ -28,20 +35,20 @@ function LoginComponent() {
           Login
         </Card.Header>
         <Card.Body>
-          <Form noValidate validated={validated} onSubmit={handleSubmit}>
+          <Form noValidate onSubmit={handleSubmit}>
             <Form.Floating className="mb-3">
               <Form.Control
                 id="email"
                 name="email"
                 type="email"
                 placeholder="name@example.com"
-                required
                 value={loginValues.email}
                 onChange={changeHandler}
+                isInvalid={!!errors.email}
               />
               <Form.Label>Email</Form.Label>
               <Form.Control.Feedback type="invalid">
-                Invalid Email
+                {errors.email}
               </Form.Control.Feedback>
             </Form.Floating>
             <Form.Floating>
@@ -50,13 +57,13 @@ function LoginComponent() {
                 name="password"
                 type="password"
                 placeholder="Password"
-                required
                 value={loginValues.password}
                 onChange={changeHandler}
+                isInvalid={!!errors.password}
               />
               <Form.Label>Password</Form.Label>
               <Form.Control.Feedback type="invalid">
-                Invalid Password
+                {errors.password}
               </Form.Control.Feedback>
             </Form.Floating>
             <br />

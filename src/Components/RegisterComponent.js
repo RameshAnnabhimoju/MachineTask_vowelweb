@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { Card, Button, Form } from "react-bootstrap";
 import RegisterFormValidationComponent from "./RegisterFormValidationComponent";
+import { useNavigate } from "react-router-dom";
+
 function RegisterComponent() {
+  const navigate = useNavigate();
   const [registerValues, setRegisterValues] = useState({
     name: "",
     dob: "",
@@ -10,17 +13,28 @@ function RegisterComponent() {
     email: "",
     password: "",
     confirmPassword: "",
-    declaration: "",
+    declaration: false,
     verified: false,
   });
   const [errors, setErrors] = useState({});
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setErrors(RegisterFormValidationComponent(registerValues));
-  };
   const changeHandler = (event) => {
     const { name, value } = event.target;
+    if (name === "declaration") {
+      console.log(event.target.checked);
+      setRegisterValues({ ...registerValues, [name]: event.target.checked });
+      return;
+    }
     setRegisterValues({ ...registerValues, [name]: value });
+  };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const newErrors = RegisterFormValidationComponent(registerValues);
+    if (JSON.stringify(newErrors) === "{}") {
+      delete registerValues.confirmPassword;
+      localStorage.setItem("machineTask", JSON.stringify(registerValues));
+      navigate("/");
+    }
+    setErrors(newErrors);
   };
   return (
     <div
