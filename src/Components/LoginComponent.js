@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Card, Button, Stack, Form } from "react-bootstrap";
-
+import { useNavigate } from "react-router-dom";
 function LoginComponent() {
+  const navigate = useNavigate();
   const InitialLoginValues = {
     email: "",
     password: "",
@@ -11,11 +12,6 @@ function LoginComponent() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.stopPropagation();
-    }
-
     setValidated(true);
   };
   const changeHandler = (event) => {
@@ -24,7 +20,7 @@ function LoginComponent() {
   };
   return (
     <div
-      class="container d-flex align-items-center justify-content-center"
+      className="container d-flex align-items-center justify-content-center"
       style={{ minHeight: "100vh" }}
     >
       <Card>
@@ -45,7 +41,7 @@ function LoginComponent() {
               />
               <Form.Label>Email</Form.Label>
               <Form.Control.Feedback type="invalid">
-                Valid Email Required
+                Invalid Email
               </Form.Control.Feedback>
             </Form.Floating>
             <Form.Floating>
@@ -60,7 +56,7 @@ function LoginComponent() {
               />
               <Form.Label>Password</Form.Label>
               <Form.Control.Feedback type="invalid">
-                Valid Password Required
+                Invalid Password
               </Form.Control.Feedback>
             </Form.Floating>
             <br />
@@ -68,7 +64,14 @@ function LoginComponent() {
               <Button variant="primary" type="submit">
                 Login
               </Button>
-              <Button variant="primary">Signup</Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  navigate("/register");
+                }}
+              >
+                Register Now
+              </Button>
             </Stack>
           </Form>
         </Card.Body>
